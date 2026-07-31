@@ -93,7 +93,12 @@ struct Entry {
 void printAll(struct Entry *input) {
     struct Entry *iterator = input;
     while (iterator != NULL) {
-        printf("%s\n", iterator->value);
+        char *value = iterator->value;
+        if (strcmp(value, "") == 0) {
+            value = "/";
+        }
+
+        printf("- %s\n", value);
         iterator = iterator->next;
     }
 }
@@ -241,6 +246,11 @@ void removeOldEntries(struct Options *op, struct Entry *entry) {
     }
 }
 
+char *folderName(char *path) {
+    char *div = strchr(path, '/');
+    return div ? div + 1 : path;
+}
+
 int main(int argc, char **args) {
     if (argc < 3) {
         printHelp();
@@ -249,7 +259,12 @@ int main(int argc, char **args) {
 
     struct Options *options = malloc(sizeof(struct Options));
     options->origin = trimPath(args[1]);
-    options->mirror = trimPath(args[2]);
+
+    if (args[2][strlen(args[2])-1] == '/') {
+        options->mirror = appendStr(args[2], folderName(options->origin));
+    } else {
+        options->mirror = args[2];
+    }
 
     if (!pathExists(options->origin)) {
         printf("Error: origin file doesn't exist");
@@ -264,24 +279,26 @@ int main(int argc, char **args) {
 
     struct Entry *oldEntries = getNewEntries(deleteOptions);
 
+    printf("\n[[ Copying from %s to %s ]]\n", options->origin, options->mirror);
+
     if (newEntries == NULL) {
-        printf("No new entries\n");
+        printf("\nNo new entries.\n");
     } else {
-        printf("New entries to be added:\n");
+        printf("\nNew entries to be added:\n");
         printAll(newEntries);
     }
 
     if (oldEntries == NULL) {
-        printf("No old entries\n");
+        printf("\nNo old entries.\n");
     } else {
-        printf("Entries to be removed:\n");
+        printf("\nEntries to be removed:\n");
         printAll(oldEntries);
     }
 
     if (oldEntries == NULL && newEntries == NULL)
         return 0;
 
-    printf("Proceed? (Y/n)");
+    printf("\nProceed? [Y/n]");
     int answer = getchar();
     if (answer != 'y' && answer != 'Y')
         return 0;
