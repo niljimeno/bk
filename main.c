@@ -194,8 +194,8 @@ void copyNewEntries(struct Options *op, struct Entry *entry) {
         char *destination = appendStr(op->mirror, entry->value);
 
         printf("Copying %s to %s\n", source, destination);
-        int status = copy(source, destination);
-        if (status != 0)
+        bool status = copy(source, destination);
+        if (!status)
             printf("Copy failed.\n");
 
         free(source);
