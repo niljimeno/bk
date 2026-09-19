@@ -1,17 +1,15 @@
 # BK - tiny backup utility
 
-This is a small backup utility for large chunks of files.
+Small, fast backup utility for large chunks of files.
 
-I figured `rsync` was too large for my use case,
-and that it runs very slow on USBs. That's why I made my own.
-
-## Status
-
-**It doesn't check if files are different**.
-That's because it's directed towards the preservation of gallery/music files.
-A new flag may be added soon.
+...because `rsync` is too complex for simple backups.
 
 ## Usage
+
+**This program doesn't check if files are different**.
+It only checks if files exists,
+then copies missing files and removes old ones.
+
 
 ```sh
 bk origin destination
